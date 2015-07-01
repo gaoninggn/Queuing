@@ -13,8 +13,18 @@ namespace queuing.Models
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
+        /// <summary>
+        /// 预约时间
+        /// </summary>
         public DateTime OrderTime { get; set; }
+        /// <summary>
+        /// 订单创建时间
+        /// </summary>
         public DateTime CreateTime { get; set; }
+        /// <summary>
+        /// 刷卡时间
+        /// </summary>
+        public DateTime ComingTime { get; set; }
         public string IDCard { get; set; }
         public virtual BusinessType businessType { get; set; }
     }

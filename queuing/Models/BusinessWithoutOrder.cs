@@ -14,7 +14,6 @@ namespace queuing.Models
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
-        public DateTime OrderTime { get; set; }
         public DateTime CreateTime { get; set; }
         public string IDCard { get; set; }
         public virtual BusinessType businessType { get; set; }
