@@ -46,6 +46,7 @@
             this.BtnCalling.TabIndex = 0;
             this.BtnCalling.Text = "叫号";
             this.BtnCalling.UseVisualStyleBackColor = true;
+            this.BtnCalling.Click += new System.EventHandler(this.BtnCalling_Click);
             // 
             // dgvOrder
             // 
