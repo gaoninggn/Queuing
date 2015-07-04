@@ -1,14 +1,8 @@
-﻿using queuing.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using System;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using queuing.Models;
 
 namespace queuing
 {
@@ -19,9 +13,9 @@ namespace queuing
             CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
 
-            this.Text = "排队系统";
+            Text = "排队系统";
 
-            //Init();
+            // Init();
         }
 
         private void Init()
@@ -67,6 +61,21 @@ namespace queuing
                     Name = "李三花"
                 });
 
+                context.businessWithoutOrder.Add(new BusinessWithoutOrder
+                {
+                    Name = "张三三",
+                    IDCard = "111111111111111111",
+                    businessType = bt1,
+                    CreateTime = DateTime.Now
+                });
+                context.businessWithoutOrder.Add(new BusinessWithoutOrder
+                {
+                    Name = "张三疯",
+                    IDCard = "111111117283911111",
+                    businessType = bt2,
+                    CreateTime = DateTime.Now
+                });
+
                 context.SaveChanges();
             }
         }
@@ -86,6 +95,19 @@ namespace queuing
 
             if (isOrder)
             {
+                var business = GetBusiness(idCard);
+
+                if (business == null)
+                {
+                    throw new Exception("此用户不存在");
+                }
+
+                if (CheckOrderTime(business.OrderTime))
+                {
+                    MessageBox.Show(@"超过预约时间10分钟,请重新预约或排队取号");
+                    return;
+                }
+
                 var frmOrder = new Order(idCard);
                 frmOrder.ShowDialog();
             }
@@ -96,17 +118,11 @@ namespace queuing
             }
         }
 
-        private bool AddWithoutOrder(string idcard)
+        private Business GetBusiness(string idCard)
         {
             using (var context = new BusinessContext())
             {
-                var bwo = new BusinessWithoutOrder
-                {
-                    IDCard = idcard,
-                    CreateTime = DateTime.Now
-                };
-                context.businessWithoutOrder.Add(bwo);
-                return context.SaveChanges() > 0;
+                return context.business.FirstOrDefault(a => a.IDCard.Equals(idCard));
             }
         }
 
@@ -129,6 +145,22 @@ namespace queuing
         {
             var frmCalling = new Calling();
             frmCalling.ShowDialog();
+        }
+
+        public bool CheckOrderTime(DateTime dt)
+        {
+            var dd = DateDiff(dt, DateTime.Now);
+
+            return dd.TotalMinutes > 10;
+        }
+
+        private static TimeSpan DateDiff(DateTime dateTime1, DateTime dateTime2)
+        {
+            var ts1 = new TimeSpan(dateTime1.Ticks);
+            var ts2 = new TimeSpan(dateTime2.Ticks);
+            var ts = ts1.Subtract(ts2).Duration();
+
+            return ts;
         }
     }
 }

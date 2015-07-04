@@ -1,50 +1,41 @@
-﻿using queuing.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using queuing.Models;
 
 namespace queuing
 {
     public partial class Order : Form
     {
-        public string IDCard { get; set; }
+        public string IdCard { get; set; }
 
         public Order(string idcard)
         {
             InitializeComponent();
 
-            System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;
+            CheckForIllegalCrossThreadCalls = false;
 
-            this.Text = "预约用户办理业务";
-            this.IDCard = idcard;
-            this.lblIdCard.Text = IDCard;
+            Text = "预约用户办理业务";
+            IdCard = idcard;
+            lblIdCard.Text = IdCard;
 
-            var thread = new Thread(new ThreadStart(GetNameByIDCardNum));
-            thread.IsBackground = true;
-            thread.Start();
+            GetNameByIdCardNum();
         }
 
-
-        private void GetNameByIDCardNum()
+        private void GetNameByIdCardNum()
         {
             using (var context = new BusinessContext())
             {
-                var business = context.business.Where(a => a.IDCard.Equals(IDCard)).FirstOrDefault();
+                var business = context.business.FirstOrDefault(a => a.IDCard.Equals(IdCard));
 
                 if (business == null)
                 {
-                    throw new Exception("");
+                    throw new Exception("没有这个人");
                 }
+
                 else
                 {
-                    this.lblName.Text = business.Name;
+                    lblName.Text = business.Name;
                 }
             }
         }
@@ -58,8 +49,9 @@ namespace queuing
         {
             using (var context = new BusinessContext())
             {
-                var business = context.business.Where(a => a.IDCard.Equals(IDCard)).FirstOrDefault();
-                MessageBox.Show("您的号码为B：" + business.Id);
+                var business = context.business.OrderBy(a => a.OrderTime).ThenBy(a => a.ComingTime).FirstOrDefault(a => a.IDCard.Equals(IdCard));
+
+                if (business != null) MessageBox.Show(@"您的号码为B：" + business.Id);
             }
         }
     }

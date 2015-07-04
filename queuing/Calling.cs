@@ -59,7 +59,7 @@ namespace queuing
                     a.IDCard,
                     a.Name,
                     a.OrderTime,
-                    Num = "B" + a.Id,
+                    a.Id,
                     typeName = a.businessType.Name
                 }).ToList();
                 count = orderList.Count;
@@ -77,7 +77,7 @@ namespace queuing
                     a.Name,
                     a.CreateTime,
                     a.IDCard,
-                    Num = "A" + a.Id,
+                    a.Id,
                     typeName = a.businessType.Name
                 }).ToList();
                 count = withoutList.Count;
@@ -94,7 +94,7 @@ namespace queuing
 
                 if (user == null)
                 {
-                    MessageBox.Show("没有人排队");
+                    MessageBox.Show(@"没有人排队");
                     return "";
                 }
 
@@ -106,7 +106,7 @@ namespace queuing
         {
             using (var context = new BusinessContext())
             {
-                var user = context.business.OrderBy(a => a.CreateTime).FirstOrDefault();
+                var user = context.business.OrderBy(a => a.OrderTime).ThenBy(a => a.ComingTime).FirstOrDefault();
 
                 if (user == null)
                 {
